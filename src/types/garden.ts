@@ -11,60 +11,46 @@ export type ObjectType =
   | 'vegetable-patch'
   | 'other';
 
-export type ShapeType = 'rectangle' | 'circle' | 'triangle' | 'polygon';
-
-export interface GPSCoordinate {
-  lat: number;
-  lng: number;
+// 2D coordinate in local space (computed from distances)
+export interface Point2D {
+  x: number;
+  y: number;
 }
 
+// A labeled point in the garden (A, B, C, etc.)
 export interface MeasurementPoint {
   id: string;
-  position: GPSCoordinate;
-  label: string;
+  label: string; // A, B, C, D, etc.
   notes?: string;
-  isReference?: boolean; // True if this point has actual GPS coordinates
-  distanceFromPrevious?: number; // Distance in meters/feet from previous point
-  bearing?: number; // Direction in degrees from previous point
+  computedPosition?: Point2D; // Calculated from distance measurements
+  isFixed?: boolean; // If true, this point's position is fixed as origin/reference
 }
 
-export interface Shape {
+// Distance measurement between two points
+export interface DistanceMeasurement {
   id: string;
-  type: ShapeType;
-  objectType: ObjectType;
-  measurementPoints: string[]; // IDs of measurement points
-  radius?: number; // For circles
-  notes?: string;
-  color?: string;
-  visible?: boolean;
-}
-
-export interface GardenSection {
-  id: string;
-  name: string;
-  shapes: Shape[];
-  visible?: boolean;
-}
-
-export interface GardenDimensions {
-  length: number;
-  width: number;
+  pointAId: string; // ID of first point
+  pointBId: string; // ID of second point
+  distance: number; // Distance in specified unit
   unit: UnitOfMeasurement;
-}
-
-export interface GardenData {
-  dimensions: GardenDimensions;
-  measurementPoints: MeasurementPoint[];
-  sections: GardenSection[];
-  distanceBetweenPoints: number;
-  numberOfPoints: number;
-  centerCoordinate?: GPSCoordinate;
   notes?: string;
 }
 
+// The complete garden/figure data
+export interface GardenData {
+  points: MeasurementPoint[];
+  measurements: DistanceMeasurement[];
+  unit: UnitOfMeasurement;
+  objectType?: ObjectType; // What this figure represents
+  notes?: string;
+}
+
+// Results of calculations
 export interface CalculationResults {
-  totalArea: number;
-  perimeter: number;
-  sectionAreas: Record<string, number>;
-  angles?: Record<string, number>;
+  area: number; // Area of the polygon formed by points
+  perimeter: number; // Total perimeter
+  isValid: boolean; // Whether the measurements form a valid figure
+  errorMessage?: string;
+  angles?: Record<string, number>; // Angles at each point
+  computedPoints?: Record<string, Point2D>; // Computed positions for each point
 }

@@ -1,58 +1,25 @@
 import { create } from 'zustand';
 import { devtools, persist } from 'zustand/middleware';
-import type {
-  GardenData,
-  MeasurementPoint,
-  GardenSection,
-  Shape,
-  UnitOfMeasurement,
-  GPSCoordinate,
-  CalculationResults,
-} from '@/types/garden';
+import type { GardenData, MeasurementPoint, DistanceMeasurement, UnitOfMeasurement, CalculationResults } from '@/types/garden';
 
 interface GardenStore extends GardenData {
-  // Actions
-  setDimensions: (length: number, width: number, unit: UnitOfMeasurement) => void;
-  setDistanceBetweenPoints: (distance: number) => void;
-  setNumberOfPoints: (count: number) => void;
-  setCenterCoordinate: (coordinate: GPSCoordinate) => void;
+  setUnit: (unit: UnitOfMeasurement) => void;
   setNotes: (notes: string) => void;
-
-  // Measurement points
-  addMeasurementPoint: (point: Omit<MeasurementPoint, 'id'>) => void;
-  updateMeasurementPoint: (id: string, updates: Partial<MeasurementPoint>) => void;
-  deleteMeasurementPoint: (id: string) => void;
-
-  // Sections
-  addSection: (name: string) => void;
-  updateSection: (id: string, updates: Partial<GardenSection>) => void;
-  deleteSection: (id: string) => void;
-  toggleSectionVisibility: (id: string) => void;
-
-  // Shapes
-  addShape: (sectionId: string, shape: Omit<Shape, 'id'>) => void;
-  updateShape: (sectionId: string, shapeId: string, updates: Partial<Shape>) => void;
-  deleteShape: (sectionId: string, shapeId: string) => void;
-  toggleShapeVisibility: (sectionId: string, shapeId: string) => void;
-
-  // Calculations
+  addPoint: (label: string) => void;
+  updatePoint: (id: string, updates: Partial<MeasurementPoint>) => void;
+  deletePoint: (id: string) => void;
+  addMeasurement: (pointAId: string, pointBId: string, distance: number) => void;
+  updateMeasurement: (id: string, updates: Partial<DistanceMeasurement>) => void;
+  deleteMeasurement: (id: string) => void;
   calculations: CalculationResults | null;
   updateCalculations: (results: CalculationResults) => void;
-
-  // Reset
   reset: () => void;
 }
 
 const initialState: GardenData = {
-  dimensions: {
-    length: 0,
-    width: 0,
-    unit: 'meters',
-  },
-  measurementPoints: [],
-  sections: [],
-  distanceBetweenPoints: 1,
-  numberOfPoints: 4,
+  points: [],
+  measurements: [],
+  unit: 'meters',
   notes: '',
 };
 
@@ -62,147 +29,37 @@ export const useGardenStore = create<GardenStore>()(
       (set) => ({
         ...initialState,
         calculations: null,
-
-        setDimensions: (length, width, unit) =>
-          set({ dimensions: { length, width, unit } }),
-
-        setDistanceBetweenPoints: (distance) =>
-          set({ distanceBetweenPoints: distance }),
-
-        setNumberOfPoints: (count) =>
-          set({ numberOfPoints: count }),
-
-        setCenterCoordinate: (coordinate) =>
-          set({ centerCoordinate: coordinate }),
-
-        setNotes: (notes) =>
-          set({ notes }),
-
-        addMeasurementPoint: (point) =>
-          set((state) => ({
-            measurementPoints: [
-              ...state.measurementPoints,
-              { ...point, id: `point-${Date.now()}-${Math.random()}` },
-            ],
-          })),
-
-        updateMeasurementPoint: (id, updates) =>
-          set((state) => ({
-            measurementPoints: state.measurementPoints.map((p) =>
-              p.id === id ? { ...p, ...updates } : p
-            ),
-          })),
-
-        deleteMeasurementPoint: (id) =>
-          set((state) => ({
-            measurementPoints: state.measurementPoints.filter((p) => p.id !== id),
-          })),
-
-        addSection: (name) =>
-          set((state) => ({
-            sections: [
-              ...state.sections,
-              {
-                id: `section-${Date.now()}-${Math.random()}`,
-                name,
-                shapes: [],
-                visible: true,
-              },
-            ],
-          })),
-
-        updateSection: (id, updates) =>
-          set((state) => ({
-            sections: state.sections.map((s) =>
-              s.id === id ? { ...s, ...updates } : s
-            ),
-          })),
-
-        deleteSection: (id) =>
-          set((state) => ({
-            sections: state.sections.filter((s) => s.id !== id),
-          })),
-
-        toggleSectionVisibility: (id) =>
-          set((state) => ({
-            sections: state.sections.map((s) =>
-              s.id === id ? { ...s, visible: !s.visible } : s
-            ),
-          })),
-
-        addShape: (sectionId, shape) =>
-          set((state) => ({
-            sections: state.sections.map((s) =>
-              s.id === sectionId
-                ? {
-                  ...s,
-                  shapes: [
-                    ...s.shapes,
-                    {
-                      ...shape,
-                      id: `shape-${Date.now()}-${Math.random()}`,
-                      visible: true,
-                    },
-                  ],
-                }
-                : s
-            ),
-          })),
-
-        updateShape: (sectionId, shapeId, updates) =>
-          set((state) => ({
-            sections: state.sections.map((s) =>
-              s.id === sectionId
-                ? {
-                  ...s,
-                  shapes: s.shapes.map((shape) =>
-                    shape.id === shapeId ? { ...shape, ...updates } : shape
-                  ),
-                }
-                : s
-            ),
-          })),
-
-        deleteShape: (sectionId, shapeId) =>
-          set((state) => ({
-            sections: state.sections.map((s) =>
-              s.id === sectionId
-                ? {
-                  ...s,
-                  shapes: s.shapes.filter((shape) => shape.id !== shapeId),
-                }
-                : s
-            ),
-          })),
-
-        toggleShapeVisibility: (sectionId, shapeId) =>
-          set((state) => ({
-            sections: state.sections.map((s) =>
-              s.id === sectionId
-                ? {
-                  ...s,
-                  shapes: s.shapes.map((shape) =>
-                    shape.id === shapeId
-                      ? { ...shape, visible: !shape.visible }
-                      : shape
-                  ),
-                }
-                : s
-            ),
-          })),
-
-        updateCalculations: (results) =>
-          set({ calculations: results }),
-
-        reset: () =>
-          set({
-            ...initialState,
-            calculations: null,
-          }),
+        setUnit: (unit) => set({ unit }),
+        setNotes: (notes) => set({ notes }),
+        addPoint: (label) => set((state) => ({
+          points: [...state.points, { id: `point-${Date.now()}`, label, notes: '' }],
+        })),
+        updatePoint: (id, updates) => set((state) => ({
+          points: state.points.map((p) => p.id === id ? { ...p, ...updates } : p),
+        })),
+        deletePoint: (id) => set((state) => ({
+          points: state.points.filter((p) => p.id !== id),
+          measurements: state.measurements.filter((m) => m.pointAId !== id && m.pointBId !== id),
+        })),
+        addMeasurement: (pointAId, pointBId, distance) => set((state) => ({
+          measurements: [...state.measurements, {
+            id: `measurement-${Date.now()}`,
+            pointAId,
+            pointBId,
+            distance,
+            unit: state.unit,
+          }],
+        })),
+        updateMeasurement: (id, updates) => set((state) => ({
+          measurements: state.measurements.map((m) => m.id === id ? { ...m, ...updates } : m),
+        })),
+        deleteMeasurement: (id) => set((state) => ({
+          measurements: state.measurements.filter((m) => m.id !== id),
+        })),
+        updateCalculations: (results) => set({ calculations: results }),
+        reset: () => set({ ...initialState, calculations: null }),
       }),
-      {
-        name: 'garden-calculator-storage',
-      }
+      { name: 'garden-store' }
     )
   )
 );

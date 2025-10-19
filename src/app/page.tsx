@@ -1,64 +1,50 @@
 "use client";
 
-import dynamic from "next/dynamic";
-import GardenDimensionsForm from "@/components/forms/GardenDimensionsForm";
-import MeasurementPointForm from "@/components/forms/MeasurementPointForm";
-import MeasurementPointDistanceForm from "@/components/forms/MeasurementPointDistanceForm";
-import ShapeForm from "@/components/forms/ShapeForm";
-import CalculationResults from "@/components/display/CalculationResults";
-import MeasurementPointsList from "@/components/display/MeasurementPointsList";
-import SectionsList from "@/components/display/SectionsList";
-import GardenSuggestions from "@/components/display/GardenSuggestions";
-
-const GardenMap = dynamic(() => import("@/components/GardenMap"), {
-  ssr: false,
-  loading: () => <div className='w-full h-[500px] bg-gray-100 rounded-lg flex items-center justify-center'>Loading map...</div>,
-});
+import PointForm from "@/components/forms/PointForm";
+import MeasurementForm from "@/components/forms/MeasurementForm";
+import PointsList from "@/components/display/PointsList";
+import MeasurementsList from "@/components/display/MeasurementsList";
+import ResultsDisplay from "@/components/display/ResultsDisplay";
+import ShapeVisualization from "@/components/ShapeVisualization";
 
 export default function Home() {
   return (
     <div className='min-h-screen bg-gray-50'>
       <header className='bg-white shadow-sm'>
         <div className='max-w-7xl mx-auto px-4 py-6'>
-          <h1 className='text-3xl font-bold text-gray-900'>Garden Calculator</h1>
-          <p className='text-gray-600 mt-1'>Plan and manage your garden layout with precision</p>
+          <h1 className='text-3xl font-bold text-gray-900'>Garden Shape Calculator</h1>
+          <p className='text-gray-600 mt-1'>Calculate area and shape from distance measurements between points</p>
         </div>
       </header>
 
       <main className='max-w-7xl mx-auto px-4 py-8'>
         <div className='grid grid-cols-1 lg:grid-cols-3 gap-6'>
-          {/* Left Column - Forms */}
+          {/* Left Column - Input Forms */}
           <div className='space-y-6'>
-            <GardenDimensionsForm />
-            <MeasurementPointForm />
-            <MeasurementPointDistanceForm />
-            <ShapeForm />
+            <PointForm />
+            <MeasurementForm />
+            <ResultsDisplay />
           </div>
 
-          {/* Middle Column - Map and Results */}
+          {/* Middle Column - Visualization */}
           <div className='lg:col-span-2 space-y-6'>
             <div className='bg-white rounded-lg shadow p-4'>
-              <h2 className='font-semibold text-lg mb-4'>Garden Map</h2>
-              <div className='h-[500px]'>
-                <GardenMap />
-              </div>
+              <h2 className='font-semibold text-lg mb-4'>2D Visualization</h2>
+              <ShapeVisualization />
             </div>
-
-            <CalculationResults />
-            <GardenSuggestions />
           </div>
         </div>
 
         {/* Bottom Section - Lists */}
         <div className='grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6'>
-          <MeasurementPointsList />
-          <SectionsList />
+          <PointsList />
+          <MeasurementsList />
         </div>
       </main>
 
       <footer className='bg-white mt-12 border-t'>
         <div className='max-w-7xl mx-auto px-4 py-6 text-center text-gray-600 text-sm'>
-          <p>Garden Calculator - Plan your perfect garden layout</p>
+          <p>Garden Shape Calculator - Calculate area from distance measurements</p>
         </div>
       </footer>
     </div>

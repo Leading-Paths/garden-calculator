@@ -1,34 +1,110 @@
-# Garden Calculator Requirements
+# Garden Shape Calculator Requirements
 
-This document outlines the requirements for the Garden Calculator application, which is designed to help users plan and manage their gardening activities effectively.
+This document outlines the requirements for the Garden Shape Calculator application, which helps users calculate the area and shape of a garden or plot based on distance measurements between labeled points.
 
-## Business requirements
+## Business Requirements
 
-- MUST be able to display/render the garden layout in a 2D grid format.
-- MUST allow users to input garden dimensions (length and width).
-- MUST allow users to select the units of measurement (e.g., feet, meters).
-- MUST allow users to choose the number of measurement points taken.
-- MUST allow users to input the distance between measurement points.
-- MUST calculate and display the total area of the garden based on user inputs.
-- MUST calculate and display the perimeter of the garden based on user inputs.
-- Must allow users to define different sections of the garden (e.g., flower beds, vegetable patches, pathways).
-- MUST assist the users but requesting additional information about the garden layout, such as additional measurement points or specific shapes.
-- MUST allow users to specify the type of object at the measurement points (e.g., plants, trees, decorations, retaining walls, steps, pathways).
-- MUST allow users to select an object type for a specific shape (e.g., rectangle, circle, triangle), based on a number of measurements points and/or a radius.
-- MUST allow users to input additional notes or comments about the garden layout.
-- SHOULD layout the garden drawing on top of a map (e.g., Google Maps, OpenStreetMap) to provide context for the garden's location.
-- SHOULD provide suggestions for optimizing garden layout based on best practices (e.g., plant spacing, sunlight exposure).
-- SHOULD allow users to save and export their garden plans in various formats (e.g., PDF, image files).
-- SHOULD display angles between measurement points when applicable.
-- SHOULD allow users to show/hide measurement points on the garden layout or per shape/zones.
+### Core Functionality
+- **MUST** allow users to define labeled points (A, B, C, D, etc.)
+- **MUST** allow users to input distance measurements between any two points
+- **MUST** calculate 2D coordinates of points from distance measurements using trilateration
+- **MUST** display a 2D visualization of the computed shape
+- **MUST** calculate and display the total area of the shape
+- **MUST** calculate and display the perimeter of the shape
+- **MUST** support both metric (meters) and imperial (feet) units
+- **MUST** validate that measurements form a valid geometric shape
+- **MUST** allow users to add/remove points and measurements dynamically
 
-## Technical requirements
+### User Experience
+- **SHOULD** auto-suggest next point label (A, B, C, etc.)
+- **SHOULD** show measurement lines with distances on the visualization
+- **SHOULD** provide feedback when measurements are inconsistent
+- **SHOULD** allow users to add notes to points
+- **SHOULD** persist data in browser localStorage
+- **SHOULD** provide suggestions for improving accuracy (e.g., add diagonal measurements)
 
-- MUST be developed using a web-based framework NextJS to ensure accessibility across different devices.
-- MUST use a responsive design to ensure usability on both desktop and mobile devices.
-- MUST create a docker compose file to facilitate easy deployment and scaling of the application.
-- MUST create a Vercel deployment configuration to enable seamless deployment to the Vercel platform.
-- MUST implement input validation to ensure that all user inputs are valid and within acceptable ranges.
-- MUST provide error handling to manage any issues that arise during user input or calculations using toast notifications.
-- MUST use LeafletJS for rendering the garden layout on a map.
-- SHOULD request measurement points GPS coordinates to accurately place the garden layout on the map.
+### Data Management
+- **MUST** validate all user inputs
+- **MUST** prevent invalid measurements (negative distances, duplicate point pairs)
+- **MUST** recalculate shape automatically when measurements change
+- **MUST** handle deletion of points (and cascade delete related measurements)
+
+## Technical Requirements
+
+### Framework & Technology
+- **MUST** be developed using Next.js 14+ with App Router
+- **MUST** use TypeScript for type safety
+- **MUST** use Tailwind CSS for styling
+- **MUST** use Zustand for state management
+- **MUST** use SVG for 2D visualization
+- **MUST** implement trilateration algorithm for computing point positions
+
+### Architecture
+- **MUST** separate concerns: types, calculations, state management, UI components
+- **MUST** use client-side rendering for interactive components
+- **MUST** implement proper error handling with user feedback
+- **MUST** validate data at both UI and calculation levels
+
+### Deployment
+- **MUST** include Docker configuration for containerized deployment
+- **MUST** include Vercel deployment configuration
+- **MUST** be responsive and work on mobile devices
+- **SHOULD** optimize for performance (memoization, efficient re-renders)
+
+## Algorithm Requirements
+
+### Trilateration
+- **MUST** place first point at origin (0, 0)
+- **MUST** place second point on positive x-axis using distance from first point
+- **MUST** compute positions of remaining points using circle-circle intersection
+- **SHOULD** use gradient descent or iterative refinement for overdetermined systems
+- **SHOULD** minimize error when measurements are slightly inconsistent
+
+### Calculations
+- **MUST** use Shoelace formula for polygon area calculation
+- **MUST** calculate perimeter as sum of edge lengths
+- **MUST** support dynamic recalculation as data changes
+- **SHOULD** calculate angles at vertices
+- **SHOULD** detect and report measurement inconsistencies
+
+## User Interface Requirements
+
+### Forms
+- Point addition form with auto-generated labels
+- Measurement form with point selection dropdowns
+- Unit selection (meters/feet)
+
+### Displays
+- List of all defined points with delete option
+- List of all measurements with labels and values
+- Results card showing area and perimeter
+- Validation status indicator
+
+### Visualization
+- SVG-based 2D representation of shape
+- Points labeled clearly
+- Measurement lines with distance annotations
+- Grid background for spatial reference
+- Auto-scaling to fit viewport
+
+## Data Model
+
+### Point
+- Unique ID
+- Label (A, B, C, etc.)
+- Optional notes
+- Computed 2D position (x, y)
+
+### Measurement
+- Unique ID
+- Point A ID
+- Point B ID  
+- Distance value
+- Unit of measurement
+
+### Results
+- Total area
+- Perimeter
+- Validity flag
+- Error message (if invalid)
+- Computed point positions
