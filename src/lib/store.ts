@@ -17,28 +17,28 @@ interface GardenStore extends GardenData {
   setNumberOfPoints: (count: number) => void;
   setCenterCoordinate: (coordinate: GPSCoordinate) => void;
   setNotes: (notes: string) => void;
-  
+
   // Measurement points
   addMeasurementPoint: (point: Omit<MeasurementPoint, 'id'>) => void;
   updateMeasurementPoint: (id: string, updates: Partial<MeasurementPoint>) => void;
   deleteMeasurementPoint: (id: string) => void;
-  
+
   // Sections
   addSection: (name: string) => void;
   updateSection: (id: string, updates: Partial<GardenSection>) => void;
   deleteSection: (id: string) => void;
   toggleSectionVisibility: (id: string) => void;
-  
+
   // Shapes
   addShape: (sectionId: string, shape: Omit<Shape, 'id'>) => void;
   updateShape: (sectionId: string, shapeId: string, updates: Partial<Shape>) => void;
   deleteShape: (sectionId: string, shapeId: string) => void;
   toggleShapeVisibility: (sectionId: string, shapeId: string) => void;
-  
+
   // Calculations
   calculations: CalculationResults | null;
   updateCalculations: (results: CalculationResults) => void;
-  
+
   // Reset
   reset: () => void;
 }
@@ -135,16 +135,16 @@ export const useGardenStore = create<GardenStore>()(
             sections: state.sections.map((s) =>
               s.id === sectionId
                 ? {
-                    ...s,
-                    shapes: [
-                      ...s.shapes,
-                      {
-                        ...shape,
-                        id: `shape-${Date.now()}-${Math.random()}`,
-                        visible: true,
-                      },
-                    ],
-                  }
+                  ...s,
+                  shapes: [
+                    ...s.shapes,
+                    {
+                      ...shape,
+                      id: `shape-${Date.now()}-${Math.random()}`,
+                      visible: true,
+                    },
+                  ],
+                }
                 : s
             ),
           })),
@@ -154,11 +154,11 @@ export const useGardenStore = create<GardenStore>()(
             sections: state.sections.map((s) =>
               s.id === sectionId
                 ? {
-                    ...s,
-                    shapes: s.shapes.map((shape) =>
-                      shape.id === shapeId ? { ...shape, ...updates } : shape
-                    ),
-                  }
+                  ...s,
+                  shapes: s.shapes.map((shape) =>
+                    shape.id === shapeId ? { ...shape, ...updates } : shape
+                  ),
+                }
                 : s
             ),
           })),
@@ -168,9 +168,9 @@ export const useGardenStore = create<GardenStore>()(
             sections: state.sections.map((s) =>
               s.id === sectionId
                 ? {
-                    ...s,
-                    shapes: s.shapes.filter((shape) => shape.id !== shapeId),
-                  }
+                  ...s,
+                  shapes: s.shapes.filter((shape) => shape.id !== shapeId),
+                }
                 : s
             ),
           })),
@@ -180,13 +180,13 @@ export const useGardenStore = create<GardenStore>()(
             sections: state.sections.map((s) =>
               s.id === sectionId
                 ? {
-                    ...s,
-                    shapes: s.shapes.map((shape) =>
-                      shape.id === shapeId
-                        ? { ...shape, visible: !shape.visible }
-                        : shape
-                    ),
-                  }
+                  ...s,
+                  shapes: s.shapes.map((shape) =>
+                    shape.id === shapeId
+                      ? { ...shape, visible: !shape.visible }
+                      : shape
+                  ),
+                }
                 : s
             ),
           })),
