@@ -1,6 +1,6 @@
 export type UnitOfMeasurement = 'feet' | 'meters';
 
-export type ObjectType = 
+export type ObjectType =
   | 'plant'
   | 'tree'
   | 'decoration'
@@ -23,6 +23,9 @@ export interface MeasurementPoint {
   position: GPSCoordinate;
   label: string;
   notes?: string;
+  isReference?: boolean; // True if this point has actual GPS coordinates
+  distanceFromPrevious?: number; // Distance in meters/feet from previous point
+  bearing?: number; // Direction in degrees from previous point
 }
 
 export interface Shape {

@@ -1,4 +1,49 @@
-import type { GPSCoordinate, MeasurementPoint, Shape, GardenData, CalculationResults } from '@/types/garden';
+import type { GPSCoordinate, MeasurementPoint, Shape, GardenData, CalculationResults, UnitOfMeasurement } from '@/types/garden';
+
+/**
+ * Calculate a new GPS coordinate from a starting point, distance, and bearing
+ * @param start Starting GPS coordinate
+ * @param distance Distance in meters or feet
+ * @param bearing Bearing in degrees (0 = North, 90 = East, 180 = South, 270 = West)
+ * @param unit Unit of measurement for the distance
+ * @returns New GPS coordinate
+ */
+export function calculatePointFromDistance(
+  start: GPSCoordinate,
+  distance: number,
+  bearing: number,
+  unit: UnitOfMeasurement = 'meters'
+): GPSCoordinate {
+  const R = 6371e3; // Earth's radius in meters
+
+  // Convert distance to meters if needed
+  const distanceInMeters = unit === 'feet' ? distance / 3.28084 : distance;
+
+  // Convert bearing to radians
+  const bearingRad = (bearing * Math.PI) / 180;
+
+  // Convert start coordinates to radians
+  const lat1 = (start.lat * Math.PI) / 180;
+  const lng1 = (start.lng * Math.PI) / 180;
+
+  // Calculate new latitude
+  const lat2 = Math.asin(
+    Math.sin(lat1) * Math.cos(distanceInMeters / R) +
+    Math.cos(lat1) * Math.sin(distanceInMeters / R) * Math.cos(bearingRad)
+  );
+
+  // Calculate new longitude
+  const lng2 = lng1 + Math.atan2(
+    Math.sin(bearingRad) * Math.sin(distanceInMeters / R) * Math.cos(lat1),
+    Math.cos(distanceInMeters / R) - Math.sin(lat1) * Math.sin(lat2)
+  );
+
+  // Convert back to degrees
+  return {
+    lat: (lat2 * 180) / Math.PI,
+    lng: (lng2 * 180) / Math.PI,
+  };
+}
 
 /**
  * Calculate distance between two GPS coordinates using Haversine formula
@@ -26,10 +71,10 @@ export function calculateAngle(p1: GPSCoordinate, vertex: GPSCoordinate, p2: GPS
   const angle1 = Math.atan2(p1.lat - vertex.lat, p1.lng - vertex.lng);
   const angle2 = Math.atan2(p2.lat - vertex.lat, p2.lng - vertex.lng);
   let angle = ((angle2 - angle1) * 180) / Math.PI;
-  
+
   if (angle < 0) angle += 360;
   if (angle > 180) angle = 360 - angle;
-  
+
   return angle;
 }
 
@@ -43,7 +88,7 @@ export function calculatePolygonArea(points: GPSCoordinate[]): number {
   // Convert GPS coordinates to meters using a local projection
   const centerLat = points.reduce((sum, p) => sum + p.lat, 0) / points.length;
   const centerLng = points.reduce((sum, p) => sum + p.lng, 0) / points.length;
-  
+
   const metersPerDegreeLat = 111320;
   const metersPerDegreeLng = 111320 * Math.cos((centerLat * Math.PI) / 180);
 
