@@ -1,0 +1,13 @@
+services:
+  garden-calculator:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: garden-calculator
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+    restart: unless-stopped
+    volumes:
+      - ./public:/app/public:ro
