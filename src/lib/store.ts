@@ -59,7 +59,7 @@ const initialState: GardenData = {
 export const useGardenStore = create<GardenStore>()(
   devtools(
     persist(
-      (set, get) => ({
+      (set) => ({
         ...initialState,
         calculations: null,
 
