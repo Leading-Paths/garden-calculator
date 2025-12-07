@@ -5,6 +5,7 @@ This document outlines the requirements for the Garden Shape Calculator applicat
 ## Business Requirements
 
 ### Core Functionality
+
 - **MUST** allow users to define labeled points (A, B, C, D, etc.)
 - **MUST** allow users to input distance measurements between any two points
 - **MUST** calculate 2D coordinates of points from distance measurements using trilateration
