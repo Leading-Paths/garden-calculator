@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "engines": {
-    "node": "22.20"
+    "node": "22.19"
   },
   "packageManager": "yarn@1.22.19",
   "scripts": {
@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "leaflet": "^1.9.4",
-    "next": "^16.0.7",
+    "next": "16.0.9",
     "react": "^19.2.1",
     "react-dom": "^19.2.1",
     "react-hot-toast": "^2.6.0",
